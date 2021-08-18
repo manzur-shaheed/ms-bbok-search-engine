@@ -28,6 +28,7 @@ const SignupForm = () => {
     }
 
     try {
+      console.log(userFormData);
       const response = await createUser(userFormData);
 
       if (!response.ok) {

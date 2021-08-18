@@ -1,8 +1,13 @@
+// models
 const { Book, User } = require('../models');
+
+// imports
 const { signToken } = require('../utils/auth');
 const { AuthenticationError } = require ('apollo-server-express');
 
+// resolvers
 const resolvers = {
+  // query
   Query: {
     me: async (parent, args, context) => {
       if(context.user) {
@@ -10,19 +15,20 @@ const resolvers = {
             .select('-__v -password')
         return userData;
       }
-      throw new AuthenticationError('You\'re not logged in');
+      throw new AuthenticationError("You are not logged in!");
     }
   },
 
+  // mutations
   Mutation: {
     login: async(parent, {email, password }) => {
         const user = await User.findOne({ email });
         if (!user) {
-            throw new AuthenticationError('Incorrect Info');
+            throw new AuthenticationError("User not found!");
         }
         const correctPassword = await user.isCorrectPassword(password);
         if (!correctPassword) {
-            throw new AuthenticationError('Incorrect Info');
+            throw new AuthenticationError("Incorrect password!");
         }
         const token = signToken(user);
         return { token, user };
@@ -43,7 +49,7 @@ const resolvers = {
             );
             return updatedUser;
         }
-        throw new AuthenticationError("Please log in")
+        throw new AuthenticationError("Please log in!")
     },
 
     removeBook: async (parent, args, context) => {
@@ -55,7 +61,7 @@ const resolvers = {
               );
               return updatedUser;
         }
-        throw new AuthenticationError("Please log in")
+        throw new AuthenticationError("Please log in!")
     }
   }
 };
