@@ -6,11 +6,12 @@ import {
   ApolloProvider,
   createHttpLink,
 } from '@apollo/client';
-import { setContext } from '@apollo/client/link/context';
 
 import SearchBooks from './pages/SearchBooks';
 import SavedBooks from './pages/SavedBooks';
 import Navbar from './components/Navbar';
+
+import { setContext } from '@apollo/client/link/context';
 
 // Construct our main GraphQL API endpoint
 const httpLink = createHttpLink({
@@ -22,6 +23,7 @@ const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
   const token = localStorage.getItem('id_token');
   // return the headers to the context so httpLink can read them
+  // console.log(token);
   return {
     headers: {
       ...headers,
@@ -36,22 +38,21 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-const errorLink = onError(({ graphQLErrors }) => {
-  if (graphQLErrors) graphQLErrors.map(({ message }) => console.log(message))
-})
-
 function App() {
   return (
-    <Router>
-      <>
-        <Navbar />
-        <Switch>
-          <Route exact path='/' component={SearchBooks} />
-          <Route exact path='/saved' component={SavedBooks} />
-          <Route render={() => <h1 className='display-2'>Wrong page!</h1>} />
-        </Switch>
-      </>
-    </Router>
+    <ApolloProvider client={client}>
+      <Router>
+        <>
+          <Navbar />
+          <Switch>
+            <Route exact path='/' component={SearchBooks} />
+            <Route exact path='/saved' component={SavedBooks} />
+            <Route render={() => <h1 className='display-2'>Wrong page!</h1>} />
+          </Switch>
+        </>
+      </Router>
+    </ApolloProvider>
+
   );
 }
 
